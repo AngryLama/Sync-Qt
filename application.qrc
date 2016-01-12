@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icon/Contribution.png</file>
+        <file>Icon/Echo.png</file>
+        <file>Icon/Sync.png</file>
+        <file>Icon/Syncro.png</file>
+        <file>Icon/Dossier.png</file>
+        <file>Icon/Plus.png</file>
+        <file>Icon/Supprimer.png</file>
+        <file>Icon/Check.png</file>
+        <file>Icon/Annuler.png</file>
+    </qresource>
+</RCC>
