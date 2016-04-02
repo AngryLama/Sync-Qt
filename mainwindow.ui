@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sync v1.2</string>
+   <string>Sync v1.2.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="application.qrc">
@@ -560,7 +560,7 @@
    <sender>pushButton_Contri</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>on_boutonsMode()</slot>
+   <slot>analyser()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>390</x>
@@ -576,7 +576,7 @@
    <sender>pushButton_Sync</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>on_boutonsMode()</slot>
+   <slot>analyser()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
@@ -592,7 +592,7 @@
    <sender>pushButton_Echo</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>on_boutonsMode()</slot>
+   <slot>analyser()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>550</x>
@@ -607,6 +607,6 @@
  </connections>
  <slots>
   <slot>on_verifChamps()</slot>
-  <slot>on_boutonsMode()</slot>
+  <slot>analyser()</slot>
  </slots>
 </ui>

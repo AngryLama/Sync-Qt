@@ -32,8 +32,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void verifListes();
-    void analyser();
     void changerMode(Mode val);
+    void changerMode(bool etat);
     void analyseContribution();
     void analyseSyncronisation();
     void analyseEcho();
@@ -74,7 +74,7 @@ private slots:
 
     void on_lineEdit_nomProfil_textChanged(const QString &arg1);
 
-    void on_boutonsMode();
+    void analyser();
 
 private:
     Ui::MainWindow *ui;

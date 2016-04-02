@@ -16,8 +16,6 @@ void ThreadCopie::run()
     case DEPLACE:
         QFile::rename(source,destination);
         break;
-    default:
-        break;
     }
 }
 

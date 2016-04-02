@@ -66,6 +66,14 @@ void MainWindow::verifListes()
 
 void MainWindow::analyser()
 {
+    QPushButton *temp=(QPushButton*)sender();
+    if(temp==ui->pushButton_Contri)
+        changerMode(CONTRIBUTION);
+    if(temp==ui->pushButton_Sync)
+        changerMode(SYNCRONISATION);
+    if(temp==ui->pushButton_Echo)
+        changerMode(ECHO);
+
     //Reset listes
     resetListes();
     fichiersSource.clear();
@@ -73,7 +81,7 @@ void MainWindow::analyser()
     repertoiresSource.clear();
     repertoiresDestination.clear();
 
-    changerMode(AUCUN);
+    changerMode(false);
     ui->label_Wait->setText("Veuillez patienter...");
     ui->label_Wait->show();
     ui->progressBar->setMaximum(0);
@@ -99,31 +107,29 @@ void MainWindow::analyser()
 
 void MainWindow::changerMode(Mode val)
 {
-    if(val!=AUCUN)
-        mode=val;
+    mode=val;
+    changerMode(true);
 
     switch (val) {
     case ECHO:
-        ui->pushButton_Contri->setEnabled(true);
-        ui->pushButton_Sync->setEnabled(true);
         ui->pushButton_Echo->setEnabled(false);
         break;
     case CONTRIBUTION:
         ui->pushButton_Contri->setEnabled(false);
-        ui->pushButton_Sync->setEnabled(true);
-        ui->pushButton_Echo->setEnabled(true);
         break;
     case SYNCRONISATION:
-        ui->pushButton_Contri->setEnabled(true);
         ui->pushButton_Sync->setEnabled(false);
-        ui->pushButton_Echo->setEnabled(true);
         break;
     default:
-        ui->pushButton_Contri->setEnabled(true);
-        ui->pushButton_Sync->setEnabled(true);
-        ui->pushButton_Echo->setEnabled(true);
         break;
     }
+}
+
+void MainWindow::changerMode(bool etat)
+{
+    ui->pushButton_Contri->setEnabled(etat);
+    ui->pushButton_Sync->setEnabled(etat);
+    ui->pushButton_Echo->setEnabled(etat);
 }
 
 void MainWindow::analyseContribution()
@@ -544,15 +550,10 @@ void MainWindow::on_pushButton_nouveauProfil_clicked()
 void MainWindow::on_verifChamps()
 {
     ui->pushButton_Lancer->setEnabled(false);
-    if(ui->lineEdit_Source->text()!="" && ui->lineEdit_Destination->text()!=""){
-        ui->pushButton_Contri->setEnabled(true);
-        ui->pushButton_Sync->setEnabled(true);
-        ui->pushButton_Echo->setEnabled(true);
-    }else{
-        ui->pushButton_Contri->setEnabled(false);
-        ui->pushButton_Sync->setEnabled(false);
-        ui->pushButton_Echo->setEnabled(false);
-    }
+    bool verif = (ui->lineEdit_Source->text()!="" && ui->lineEdit_Destination->text()!="");
+    ui->pushButton_Contri->setEnabled(verif);
+    ui->pushButton_Sync->setEnabled(verif);
+    ui->pushButton_Echo->setEnabled(verif);
 }
 
 void MainWindow::on_pushButton_supprimerProfil_clicked()
@@ -605,17 +606,4 @@ void MainWindow::on_lineEdit_nomProfil_textChanged(const QString &arg1)
         }
     }
     ui->pushButton_nouveauProfil->setEnabled(verif);
-}
-
-void MainWindow::on_boutonsMode()
-{
-    QPushButton *temp=(QPushButton*)sender();
-    if(temp==ui->pushButton_Contri)
-        changerMode(CONTRIBUTION);
-    if(temp==ui->pushButton_Sync)
-        changerMode(SYNCRONISATION);
-    if(temp==ui->pushButton_Echo)
-        changerMode(ECHO);
-    ui->label_Wait->hide();
-    analyser();
 }
