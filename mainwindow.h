@@ -31,12 +31,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void verifListes();
     void changerMode(Mode val);
     void changerMode(bool etat);
-    void analyseContribution();
-    void analyseSyncronisation();
-    void analyseEcho();
+    void analyserContribution();
+    void analyserSyncronisation();
+    void analyserEcho();
     void resetListes();
 
 private slots:
@@ -91,13 +90,13 @@ private:
     QStringList filtre;
 
     //Listes générées
-    QStringList fichiersSource,fichiersDestination,repertoiresSource,repertoiresDestination;
+    QStringList fichiersSource,fichiersDestination,dossiersSource,dossiersDestination;
 
     //Listes des transferts
-    QStringList fichiersVersDestination,repertoiresVersDestination,fichiersVersSource,repertoiresVersSource;
+    QStringList fichiersVersDestination,dossiersVersDestination,fichiersVersSource,dossiersVersSource;
 
     //Listes des suppressions
-    QStringList fichiersSupprDestination,repertoiresSupprDestination;
+    QStringList fichiersSupprDestination,dossiersSupprDestination;
 };
 
 #endif // MAINWINDOW_H

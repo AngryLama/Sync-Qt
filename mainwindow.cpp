@@ -57,13 +57,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::verifListes()
-{
-    if(fichiersVersDestination.length()==0 && repertoiresVersDestination.length()==0 && fichiersVersSource.length()==0 && repertoiresVersSource.length()==0 && fichiersSupprDestination.length()==0 && repertoiresSupprDestination.length()==0)
-        ui->pushButton_Lancer->setEnabled(false);
-    else ui->pushButton_Lancer->setEnabled(true);
-}
-
 void MainWindow::analyser()
 {
     QPushButton *temp=(QPushButton*)sender();
@@ -74,34 +67,37 @@ void MainWindow::analyser()
     if(temp==ui->pushButton_Echo)
         changerMode(ECHO);
 
-    //Reset listes
-    resetListes();
-    fichiersSource.clear();
-    fichiersDestination.clear();
-    repertoiresSource.clear();
-    repertoiresDestination.clear();
-
-    changerMode(false);
-    ui->label_Wait->setText("Veuillez patienter...");
-    ui->label_Wait->show();
-    ui->progressBar->setMaximum(0);
-
-    recherche[0]=new ThreadDirIterator(source,filtre,FICHIER,true);
-    connect(recherche[0],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finFichiersSource(QStringList)));
-
-    recherche[1]=new ThreadDirIterator(source,filtre,DOSSIER,true);
-    connect(recherche[1],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finDossiersSource(QStringList)));
-
-    recherche[2]=new ThreadDirIterator(destination,filtre,FICHIER,true);
-    connect(recherche[2],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finFichiersDestination(QStringList)));
-
-    recherche[3]=new ThreadDirIterator(destination,filtre,DOSSIER,true);
-    connect(recherche[3],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finDossiersDestination(QStringList)));
-
-    for(int x=0;x<4;x++)
+    if(mode != AUCUN)
     {
-        connect(recherche[x],SIGNAL(finished()),this,SLOT(on_finRecherche()));
-        recherche[x]->start();
+        //Reset listes
+        resetListes();
+        fichiersSource.clear();
+        fichiersDestination.clear();
+        dossiersSource.clear();
+        dossiersDestination.clear();
+
+        changerMode(false);
+        ui->label_Wait->setText("Veuillez patienter...");
+        ui->label_Wait->show();
+        ui->progressBar->setMaximum(0);
+
+        recherche[0]=new ThreadDirIterator(source,filtre,FICHIER,true);
+        connect(recherche[0],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finFichiersSource(QStringList)));
+
+        recherche[1]=new ThreadDirIterator(source,filtre,DOSSIER,true);
+        connect(recherche[1],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finDossiersSource(QStringList)));
+
+        recherche[2]=new ThreadDirIterator(destination,filtre,FICHIER,true);
+        connect(recherche[2],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finFichiersDestination(QStringList)));
+
+        recherche[3]=new ThreadDirIterator(destination,filtre,DOSSIER,true);
+        connect(recherche[3],SIGNAL(finRecherche(QStringList)),this,SLOT(on_finDossiersDestination(QStringList)));
+
+        for(int x=0;x<4;x++)
+        {
+            connect(recherche[x],SIGNAL(finished()),this,SLOT(on_finRecherche()));
+            recherche[x]->start();
+        }
     }
 }
 
@@ -132,7 +128,7 @@ void MainWindow::changerMode(bool etat)
     ui->pushButton_Echo->setEnabled(etat);
 }
 
-void MainWindow::analyseContribution()
+void MainWindow::analyserContribution()
 {
     resetListes();
     QString temp;
@@ -157,13 +153,13 @@ void MainWindow::analyseContribution()
     }
 
     tempI=0;
-    for(int x=0;x<repertoiresSource.length();x++){
-        temp = destination+repertoiresSource[x];
+    for(int x=0;x<dossiersSource.length();x++){
+        temp = destination+dossiersSource[x];
         QDir dossier(temp);
         if(!dossier.isReadable()){
             tempI++;
             ui->tableWidget_Resume->item(0,1)->setText(QString::number(tempI));
-            repertoiresVersDestination<<repertoiresSource[x];
+            dossiersVersDestination<<dossiersSource[x];
         }
     }
 
@@ -188,18 +184,18 @@ void MainWindow::analyseContribution()
     }
 
     tempI=0;
-    for(int x=0;x<repertoiresDestination.length();x++){
-        temp = source+repertoiresDestination[x];
+    for(int x=0;x<dossiersDestination.length();x++){
+        temp = source+dossiersDestination[x];
         QDir dossier(temp);
         if(!dossier.isReadable()){
             tempI++;
             ui->tableWidget_Resume->item(0,0)->setText(QString::number(tempI));
-            repertoiresVersSource<<repertoiresDestination[x];
+            dossiersVersSource<<dossiersDestination[x];
         }
     }
 }
 
-void MainWindow::analyseSyncronisation()
+void MainWindow::analyserSyncronisation()
 {
     resetListes();
     QString temp;
@@ -224,13 +220,13 @@ void MainWindow::analyseSyncronisation()
     }
 
     tempI=0;
-    for(int x=0;x<repertoiresSource.length();x++){
-        temp = destination+repertoiresSource[x];
+    for(int x=0;x<dossiersSource.length();x++){
+        temp = destination+dossiersSource[x];
         QDir dossier(temp);
         if(!dossier.isReadable()){
             tempI++;
             ui->tableWidget_Resume->item(0,1)->setText(QString::number(tempI));
-            repertoiresVersDestination<<repertoiresSource[x];
+            dossiersVersDestination<<dossiersSource[x];
         }
     }
 
@@ -249,21 +245,21 @@ void MainWindow::analyseSyncronisation()
     }
 
     tempI=0;
-    for(int x=0;x<repertoiresDestination.length();x++){
+    for(int x=0;x<dossiersDestination.length();x++){
         bool verif=false;
-        for(int y=0;y<repertoiresSource.length();y++){
-            if(repertoiresDestination[x]==repertoiresSource[y])
+        for(int y=0;y<dossiersSource.length();y++){
+            if(dossiersDestination[x]==dossiersSource[y])
                 verif=true;
         }
         if(!verif){
             tempI++;
             ui->tableWidget_Resume->item(0,2)->setText(QString::number(tempI));
-            repertoiresSupprDestination<<repertoiresDestination[x];
+            dossiersSupprDestination<<dossiersDestination[x];
         }
     }
 }
 
-void MainWindow::analyseEcho()
+void MainWindow::analyserEcho()
 {
     resetListes();
     QString temp;
@@ -301,23 +297,23 @@ void MainWindow::analyseEcho()
 
     //Analyse des dossiers à supprimer
     tempI=0;
-    for(int x=0;x<repertoiresDestination.length();x++){
-        if(repertoiresSource.count(repertoiresDestination[x])==0){
+    for(int x=0;x<dossiersDestination.length();x++){
+        if(dossiersSource.count(dossiersDestination[x])==0){
             tempI++;
             ui->tableWidget_Resume->item(0,2)->setText(QString::number(tempI));
-            repertoiresSupprDestination<<repertoiresDestination[x];
+            dossiersSupprDestination<<dossiersDestination[x];
         }
     }
 
     //Analyse des répertoires à créer
     tempI=0;
-    for(int x=0;x<repertoiresSource.length();x++){
-        temp = destination+repertoiresSource[x];
+    for(int x=0;x<dossiersSource.length();x++){
+        temp = destination+dossiersSource[x];
         QDir dossier(temp);
         if(!dossier.isReadable()){
             tempI++;
             ui->tableWidget_Resume->item(0,1)->setText(QString::number(tempI));
-            repertoiresVersDestination<<repertoiresSource[x];
+            dossiersVersDestination<<dossiersSource[x];
         }
     }
 }
@@ -326,11 +322,11 @@ void MainWindow::resetListes()
 {
     //Reset listes
     fichiersVersDestination.clear();
-    repertoiresVersDestination.clear();
+    dossiersVersDestination.clear();
     fichiersVersSource.clear();
-    repertoiresVersSource.clear();
+    dossiersVersSource.clear();
     fichiersSupprDestination.clear();
-    repertoiresSupprDestination.clear();
+    dossiersSupprDestination.clear();
 
     //Remise à zéro tableau
     ui->tableWidget_Resume->item(0,0)->setText(QString::number(0));
@@ -385,7 +381,7 @@ void MainWindow::on_pushButton_Lancer_clicked()
     ui->pushButton_Sync->setEnabled(false);
     ui->pushButton_Echo->setEnabled(false);
     ui->pushButton_Quitter->setEnabled(false);
-    ui->progressBar->setMaximum(fichiersSupprDestination.length()+repertoiresSupprDestination.length()+repertoiresVersSource.length()+repertoiresVersDestination.length()+fichiersVersSource.length()+fichiersVersDestination.length());
+    ui->progressBar->setMaximum(fichiersSupprDestination.length()+dossiersSupprDestination.length()+dossiersVersSource.length()+dossiersVersDestination.length()+fichiersVersSource.length()+fichiersVersDestination.length());
     QDir doss;
 
     //Suppression fichiers destination
@@ -397,26 +393,26 @@ void MainWindow::on_pushButton_Lancer_clicked()
     }
 
     //Suppression dossiers destination
-    if(!repertoiresSupprDestination.isEmpty()){
-        for(int x=0;x<repertoiresSupprDestination.length();x++){
+    if(!dossiersSupprDestination.isEmpty()){
+        for(int x=0;x<dossiersSupprDestination.length();x++){
             ui->progressBar->setValue(ui->progressBar->value()+1);
-            doss.rmdir(destination+repertoiresSupprDestination[x]);
+            doss.rmdir(destination+dossiersSupprDestination[x]);
         }
     }
 
     //Création dossiers vers source
-    if(!repertoiresVersSource.isEmpty()){
-        for(int x=0;x<repertoiresVersSource.length();x++){
+    if(!dossiersVersSource.isEmpty()){
+        for(int x=0;x<dossiersVersSource.length();x++){
             ui->progressBar->setValue(ui->progressBar->value()+1);
-            doss.mkdir(source+repertoiresVersSource[x]);
+            doss.mkdir(source+dossiersVersSource[x]);
         }
     }
 
     //Création dossiers vers destination
-    if(!repertoiresVersDestination.isEmpty()){
-        for(int x=0;x<repertoiresVersDestination.length();x++){
+    if(!dossiersVersDestination.isEmpty()){
+        for(int x=0;x<dossiersVersDestination.length();x++){
             ui->progressBar->setValue(ui->progressBar->value()+1);
-            doss.mkdir(destination+repertoiresVersDestination[x]);
+            doss.mkdir(destination+dossiersVersDestination[x]);
         }
     }
 
@@ -469,7 +465,7 @@ void MainWindow::on_finFichiersSource(QStringList liste)
 
 void MainWindow::on_finDossiersSource(QStringList liste)
 {
-    repertoiresSource=liste;
+    dossiersSource=liste;
     delete recherche[1];
     recherche[1]=NULL;
 }
@@ -483,7 +479,7 @@ void MainWindow::on_finFichiersDestination(QStringList liste)
 
 void MainWindow::on_finDossiersDestination(QStringList liste)
 {
-    repertoiresDestination=liste;
+    dossiersDestination=liste;
     delete recherche[3];
     recherche[3]=NULL;
 }
@@ -494,12 +490,12 @@ void MainWindow::on_finRecherche()
     {
         for(int x=0;x<fichiersSource.length();x++)
             fichiersSource[x].remove(source);
-        for(int x=0;x<repertoiresSource.length();x++)
-            repertoiresSource[x].remove(source);
+        for(int x=0;x<dossiersSource.length();x++)
+            dossiersSource[x].remove(source);
         for(int x=0;x<fichiersDestination.length();x++)
             fichiersDestination[x].remove(destination);
-        for(int x=0;x<repertoiresDestination.length();x++)
-            repertoiresDestination[x].remove(destination);
+        for(int x=0;x<dossiersDestination.length();x++)
+            dossiersDestination[x].remove(destination);
 
         ui->progressBar->setMaximum(100);
         ui->progressBar->setValue(0);
@@ -507,18 +503,18 @@ void MainWindow::on_finRecherche()
 
         switch (mode) {
         case CONTRIBUTION:
-            analyseContribution();
+            analyserContribution();
             break;
         case SYNCRONISATION:
-            analyseSyncronisation();
+            analyserSyncronisation();
             break;
         case ECHO:
-            analyseEcho();
+            analyserEcho();
             break;
         default:
             break;
         }
-        verifListes();
+        ui->pushButton_Lancer->setEnabled(!(!fichiersVersDestination.length() && !dossiersVersDestination.length() && !fichiersVersSource.length() && !dossiersVersSource.length() && !fichiersSupprDestination.length() && !dossiersSupprDestination.length()));
     }
 }
 
