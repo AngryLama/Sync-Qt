@@ -339,24 +339,18 @@ void MainWindow::resetListes()
 
 void MainWindow::on_pushButton_Source_clicked()
 {
-    source = QFileDialog::getExistingDirectory(this, tr("Choisir le dossier source"),
-                                                 "/home",
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
-    if(source.length()>3)
-        source+="/";
-    ui->lineEdit_Source->setText(source);
+    ui->lineEdit_Source->setText(QFileDialog::getExistingDirectory(this, tr("Choisir le dossier source"),
+                                                                   "/home",
+                                                                   QFileDialog::ShowDirsOnly
+                                                                   | QFileDialog::DontResolveSymlinks));
 }
 
 void MainWindow::on_pushButton_Destination_clicked()
 {
-    destination = QFileDialog::getExistingDirectory(this, tr("Choisir le dossier source"),
-                                                 "/home",
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
-    if(destination.length()>3)
-        destination+="/";
-    ui->lineEdit_Destination->setText(destination);
+    ui->lineEdit_Destination->setText(QFileDialog::getExistingDirectory(this, tr("Choisir le dossier source"),
+                                                                        "/home",
+                                                                        QFileDialog::ShowDirsOnly
+                                                                        | QFileDialog::DontResolveSymlinks));
 }
 
 void MainWindow::on_progressBar_valueChanged(int value)
@@ -371,15 +365,12 @@ void MainWindow::on_progressBar_valueChanged(int value)
 
 void MainWindow::on_pushButton_Lancer_clicked()
 {
-    ui->label_fichierEnCours->clear();
     ui->label_fichierEnCours->show();
     ui->label_Wait->show();
     ui->pushButton_Lancer->setEnabled(false);
     ui->pushButton_Source->setEnabled(false);
     ui->pushButton_Destination->setEnabled(false);
-    ui->pushButton_Contri->setEnabled(false);
-    ui->pushButton_Sync->setEnabled(false);
-    ui->pushButton_Echo->setEnabled(false);
+    changerMode(false);
     ui->pushButton_Quitter->setEnabled(false);
     ui->progressBar->setMaximum(fichiersSupprDestination.length()+dossiersSupprDestination.length()+dossiersVersSource.length()+dossiersVersDestination.length()+fichiersVersSource.length()+fichiersVersDestination.length());
     QDir doss;
@@ -515,6 +506,7 @@ void MainWindow::on_finRecherche()
             break;
         }
         ui->pushButton_Lancer->setEnabled(!(!fichiersVersDestination.length() && !dossiersVersDestination.length() && !fichiersVersSource.length() && !dossiersVersSource.length() && !fichiersSupprDestination.length() && !dossiersSupprDestination.length()));
+        changerMode(mode);
     }
 }
 
@@ -545,6 +537,8 @@ void MainWindow::on_pushButton_nouveauProfil_clicked()
 
 void MainWindow::on_verifChamps()
 {
+    source = ui->lineEdit_Source->text();
+    destination = ui->label_destination->text();
     ui->pushButton_Lancer->setEnabled(false);
     bool verif = (ui->lineEdit_Source->text()!="" && ui->lineEdit_Destination->text()!="");
     ui->pushButton_Contri->setEnabled(verif);
@@ -561,7 +555,7 @@ void MainWindow::on_pushButton_supprimerProfil_clicked()
     message.addButton("Annuler",QMessageBox::RejectRole);
     if(message.exec()==QMessageBox::AcceptRole){
         QSqlQuery query;
-        query.prepare("DELETE FROM Profils where Nom=:nom");
+        query.prepare("DELETE FROM Profils where Nom=:nom;");
         query.bindValue(":nom",ui->listWidget_profils->currentItem()->text());
         if(query.exec())
             delete ui->listWidget_profils->currentItem();
@@ -571,7 +565,7 @@ void MainWindow::on_pushButton_supprimerProfil_clicked()
 void MainWindow::on_listWidget_profils_currentTextChanged(const QString &currentText)
 {
     QSqlQuery query;
-    query.prepare("SELECT Source,Destination FROM Profils where Nom=:nom");
+    query.prepare("SELECT Source,Destination FROM Profils where Nom=:nom;");
     query.bindValue(":nom",currentText);
     if(query.exec())
     {

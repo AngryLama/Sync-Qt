@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sync v1.2.1</string>
+   <string>Sync v1.2.2</string>
   </property>
   <property name="windowIcon">
    <iconset resource="application.qrc">
